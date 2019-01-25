@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: passgen-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/enable-access-log: true
+spec:
+  tls:
+  - hosts:
+    - example.com
+    secretName: passgen-tls-cert
+  backend:
+    serviceName: passgen-svc
+    servicePort: 8443

@@ -1,5 +1,11 @@
 # Passgen-svc: a minimal https service for password generation
 
+This project is a minimial web service for password generations. It doesn't
+recordy any data about the customer (except for the caller IP address). 
+It provides a safe and lightweight tool to generate random passwords of 
+variable lenght and format using the package 
+[github.com/sethvargo/go-password](https://github.com/sethvargo/go-password).
+
 ### Server Usage
 To run the service manually:
 ```

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: passgen-svc
+spec:
+  ports:
+  - name: passgen-defult-port
+    port: 8443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    app: passgen-svc
+

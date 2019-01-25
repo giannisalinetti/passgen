@@ -17,6 +17,28 @@ To run the service in a container (recommended):
 docker run -d -p 8443:8443 quay.io/gbsalinetti/passgen-svc:latest
 ```
 
+To run on Kubenernetes/OpenShift the manifests provided in the *manifests* folder
+can be used as a starting point.
+
+To create the Deployment resource:
+```
+$ kubectl create -f manifests/deployment.yaml
+```
+
+To create the Service (esposed on 8443):
+```
+$ kubectl create -f manifests/service.yaml
+```
+
+To create an Ingress route and the secret to expose it on https:
+```
+$ kubectl create -f manifesta/secret.yaml
+$ kubectl create -f manifests/ingress.yaml
+```
+
+The secret should be updated with the correct certificates. The hostname 
+defined in the ingress route must match the one in the certificate CN.
+
 ### Client Usage
 To get a standard default password of length 32:
 ```

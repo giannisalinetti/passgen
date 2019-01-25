@@ -2,8 +2,12 @@ FROM docker.io/golang
 
 MAINTAINER Gianni Salinetti <gbsalinetti@extraordy.com>
 
+# Define a volume for certificates
+VOLUME /etc/passgen/certs/
+
 # Copy files for build
-COPY server.crt server.key main.go /go/src/passgen-svc/
+COPY certs/server.crt certs/server.key /etc/passgen/certs/
+COPY main.go /go/src/passgen-svc/
 
 # Set the working directory
 WORKDIR /go/src/passgen-svc
@@ -14,6 +18,6 @@ RUN go get -d -v ./...
 # Install the package
 RUN go install -v ./...
 
-EXPOSE 443
+EXPOSE 8443
 
 CMD ["passgen-svc"]

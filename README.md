@@ -34,22 +34,27 @@ $ curl -k 'https://localhost:8443/passwd?length=64&digits=8&symbols=4&noupper=fa
 ```
 
 ### Build
+To generate the certificates before building:
+```
+$ make gencerts
+```
+
 To build the image:
 ```
-make build
+# make build
 ```
 
 To tag and push the image to the proper repository (Adjust Makefile to your personal
 repository):
 ```
-make tag && make push
+# make tag && make push
 ```
 
 ### Self signed certificate
 This project is a proof of concept. Self signed certificate and the associated key 
 have been generated with the following command:
 ```
-openssl req -newkey rsa:2048 -nodes -keyout server.key -x509 -days 365 -out server.crt
+$ openssl req -newkey rsa:2048 -nodes -keyout server.key -x509 -days 365 -out server.crt
 ```
 
-The script *hack/genselfsigned.sh* can be used to regenerate new certificates.
+The script *hack/genselfsigned.sh* can be manually used to regenerate new certificates.

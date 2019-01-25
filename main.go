@@ -23,12 +23,6 @@ var genInput = &password.GeneratorInput{
 	"!@#$%^&*()_+{}:;.<>?/|",
 }
 
-// Path of server certificate and key
-var (
-	serverCert = "server.crt"
-	serverKey  = "server.key"
-)
-
 // Config defines the configuration parameters
 type Config struct {
 	length        int
@@ -39,10 +33,22 @@ type Config struct {
 	numIterations int
 }
 
+// NewConfig is the default constructor for the Config type
+func NewConfig() *Config {
+	return &Config{
+		32,    // Default number of characters
+		10,    // Default number of digits
+		10,    // Default number of symbols
+		false, // Avoid uppercase bool
+		false, // Allow repetitions bool
+		1,     // Default number of iterations
+	}
+}
+
 // initParams initializes the configuration parameters
 func initParams(r *http.Request) (*Config, error) {
 
-	c := &Config{32, 10, 10, false, false, 1}
+	c := NewConfig()
 	q := r.URL.Query()
 
 	values, _ := q["length"]
@@ -114,22 +120,38 @@ func helpFunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "iterations:\tNumber of passwords to print. Default 1\n")
 }
 
-func main() {
-	// Define the listening port with a flag
-	var port string
-	flag.StringVar(&port, "p", "8443", "Listening port")
-	flag.Parse()
-
+func verifyCerts(crt, key string) error {
 	// Verify if the certificate exists
-	_, err := os.Stat(serverCert)
+	_, err := os.Stat(crt)
 	if err != nil {
-		log.Fatal("Certificate file not found")
+		return err
 	}
 
 	// Verify if the key exists
-	_, err = os.Stat(serverKey)
+	_, err = os.Stat(key)
 	if err != nil {
-		log.Fatal("Key file not found")
+		return err
+	}
+	return nil
+}
+
+func main() {
+	// Define the listening port with a flag
+	var (
+		port       string
+		serverCert string
+		serverKey  string
+	)
+
+	flag.StringVar(&port, "port", "8443", "Listening port")
+	flag.StringVar(&serverCert, "crt", "/etc/passgen/certs/server.crt", "Path to server certificate")
+	flag.StringVar(&serverKey, "key", "/etc/passgen/certs/server.key", "Path to private key")
+	flag.Parse()
+
+	// Test if provided certificates exist
+	err := verifyCerts(serverCert, serverKey)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// Declare the HandleFuncs

@@ -2,6 +2,9 @@ APP_NAME=passgen-svc
 REGISTRY=quay.io
 NAMESPACE=gbsalinetti
 
+gencerts:
+	hack/genselfsigned.sh
+
 build:
 	docker build -t $(APP_NAME) .
 

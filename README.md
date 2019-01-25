@@ -51,3 +51,5 @@ have been generated with the following command:
 ```
 openssl req -newkey rsa:2048 -nodes -keyout server.key -x509 -days 365 -out server.crt
 ```
+
+The script *hack/genselfsigned.sh* can be used to regenerate new certificates.

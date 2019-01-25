@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: passgen-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: passgen-svc
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+
+  template:
+    metadata:
+      labels:
+        app: passgen-svc
+    spec:
+      containers:
+      - name: passgen-svc
+        image: quay.io/gbsalinetti/passgen-svc:latest
+        imagePullPolicy: Always
+        command: 
+        - passgen-svc 
+        - -port 
+        - "8443"
+        ports:
+        - containerPort: 8443
+          protocol: TCP
+      restartPolicy: Always
+              

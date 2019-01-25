@@ -120,6 +120,11 @@ func helpFunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "iterations:\tNumber of passwords to print. Default 1\n")
 }
 
+// healthFunc return an HTTP 200 status for liveness probes
+func healthFunc(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Status: OK\n")
+}
+
 func verifyCerts(crt, key string) error {
 	// Verify if the certificate exists
 	_, err := os.Stat(crt)
@@ -157,6 +162,7 @@ func main() {
 	// Declare the HandleFuncs
 	http.HandleFunc("/passwd", passwdFunc)
 	http.HandleFunc("/help", helpFunc)
+	http.HandleFunc("/health", healthFunc)
 
 	// Start a os.Signal channel to accept signals
 	sigs := make(chan os.Signal, 1)

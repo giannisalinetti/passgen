@@ -12,7 +12,6 @@ spec:
       maxSurge: 1
       maxUnavailable: 1
     type: RollingUpdate
-
   template:
     metadata:
       labels:
@@ -29,5 +28,15 @@ spec:
         ports:
         - containerPort: 8443
           protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: "/health"
+            port: 8443
+            scheme: HTTPS
+        readinessProbe:
+          httpGet:
+            path: "/health"
+            port: 8443
+            scheme: HTTPS
       restartPolicy: Always
               

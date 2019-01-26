@@ -56,7 +56,14 @@ func initParams(r *http.Request) (*Config, error) {
 
 	values, _ := q["length"]
 	if len(values) != 0 {
-		c.length, _ = strconv.Atoi(values[0])
+		value, err := strconv.Atoi(values[0])
+		if err != nil {
+			return nil, err
+		}
+		if value > 2048 {
+			return nil, fmt.Errorf("Error: password lenght cannot be higher than 2048")
+		}
+		c.length = value
 	}
 
 	values, _ = q["digits"]
@@ -81,7 +88,14 @@ func initParams(r *http.Request) (*Config, error) {
 
 	values, _ = q["iterations"]
 	if len(values) != 0 {
-		c.numIterations, _ = strconv.Atoi(values[0])
+		value, err := strconv.Atoi(values[0])
+		if err != nil {
+			return nil, err
+		}
+		if value > 4096 {
+			return nil, fmt.Errorf("Error: the number of iterations cannot exceed 4096")
+		}
+		c.numIterations = value
 	}
 
 	values, _ = q["json"]
@@ -121,9 +135,12 @@ func jsonPrinter(s []string) ([]byte, error) {
 // passwdFunc is the handler function for password generation
 func passwdFunc(w http.ResponseWriter, r *http.Request) {
 
+	// If initParams returns an error just print logs and errors and return
 	cfg, err := initParams(r)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		fmt.Fprintf(w, "%v\n", err)
+		return
 	}
 
 	gen, err := password.NewGenerator(genInput)

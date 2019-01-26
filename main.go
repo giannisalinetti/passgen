@@ -133,20 +133,22 @@ func passwdFunc(w http.ResponseWriter, r *http.Request) {
 
 	passwdSlice, err := makePasswdSlice(gen, cfg)
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	if cfg.json {
-		passwdJson, err := jsonPrinter(passwdSlice)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("Client request: %d new password(s) generated for host %s\n", cfg.numIterations, r.RemoteAddr)
-		fmt.Fprintf(w, string(passwdJson))
+		log.Println(err) // Don't exit on password generation errors
+		fmt.Fprintf(w, "%v\n", err)
 	} else {
-		log.Printf("Client request: %d new password(s) generated for host %s\n", cfg.numIterations, r.RemoteAddr)
-		for index, value := range passwdSlice {
-			fmt.Fprintf(w, "Password%d: %s\n", index, value)
+		if cfg.json {
+			passwdJson, err := jsonPrinter(passwdSlice)
+			if err != nil {
+				log.Println(err)
+				fmt.Fprintf(w, "JSON encoding error: %v\n", err)
+			}
+			log.Printf("Client request: %d new password(s) generated for host %s\n", cfg.numIterations, r.RemoteAddr)
+			fmt.Fprintf(w, string(passwdJson))
+		} else {
+			log.Printf("Client request: %d new password(s) generated for host %s\n", cfg.numIterations, r.RemoteAddr)
+			for index, value := range passwdSlice {
+				fmt.Fprintf(w, "Password%d: %s\n", index, value)
+			}
 		}
 	}
 }

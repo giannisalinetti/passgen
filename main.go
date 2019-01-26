@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -31,6 +32,7 @@ type Config struct {
 	noUpper       bool
 	allowRepeat   bool
 	numIterations int
+	json          bool
 }
 
 // NewConfig is the default constructor for the Config type
@@ -42,6 +44,7 @@ func NewConfig() *Config {
 		false, // Avoid uppercase bool
 		false, // Allow repetitions bool
 		1,     // Default number of iterations
+		false, // Print in json format
 	}
 }
 
@@ -81,7 +84,38 @@ func initParams(r *http.Request) (*Config, error) {
 		c.numIterations, _ = strconv.Atoi(values[0])
 	}
 
+	values, _ = q["json"]
+	if len(values) != 0 {
+		c.json, _ = strconv.ParseBool(values[0])
+	}
+
 	return c, nil
+}
+
+// makePasswdSlice generates the slice of passwords
+func makePasswdSlice(gen *password.Generator, cfg *Config) ([]string, error) {
+	p := make([]string, 0)
+	for i := 0; i < cfg.numIterations; i++ {
+		res, err := gen.Generate(cfg.length, cfg.numDigits, cfg.numSymbols, cfg.noUpper, cfg.allowRepeat)
+		if err != nil {
+			return nil, err
+		}
+		p = append(p, res)
+	}
+	return p, nil
+}
+
+// jsonPrinter handles the json formatting of the output
+func jsonPrinter(s []string) ([]byte, error) {
+	p := make(map[string]string)
+	for i, v := range s {
+		p["Password"+strconv.Itoa(i)] = v
+	}
+	b, err := json.Marshal(p)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 // passwdFunc is the handler function for password generation
@@ -97,15 +131,23 @@ func passwdFunc(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	for i := 0; i < cfg.numIterations; i++ {
-		res, err := gen.Generate(cfg.length, cfg.numDigits, cfg.numSymbols, cfg.noUpper, cfg.allowRepeat)
+	passwdSlice, err := makePasswdSlice(gen, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if cfg.json {
+		passwdJson, err := jsonPrinter(passwdSlice)
 		if err != nil {
-			fmt.Fprintf(w, "%v\n", err)
-			log.Printf("Client error: %v\n", err)
-			break
+			log.Fatal(err)
 		}
-		log.Printf("Client request: new password generated for host %s\n", r.RemoteAddr)
-		fmt.Fprintf(w, "Password: %s\n", res)
+		log.Printf("Client request: %d new password(s) generated for host %s\n", cfg.numIterations, r.RemoteAddr)
+		fmt.Fprintf(w, string(passwdJson))
+	} else {
+		log.Printf("Client request: %d new password(s) generated for host %s\n", cfg.numIterations, r.RemoteAddr)
+		for index, value := range passwdSlice {
+			fmt.Fprintf(w, "Password%d: %s\n", index, value)
+		}
 	}
 }
 
@@ -118,6 +160,7 @@ func helpFunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "noupper:\tForbid uppercase letters. Default: false\n")
 	fmt.Fprintf(w, "allowrepeat:\tAllow repetitions. Default: false\n")
 	fmt.Fprintf(w, "iterations:\tNumber of passwords to print. Default 1\n")
+	fmt.Fprintf(w, "json:\t\tReturn output in json format. Default false\n")
 }
 
 // healthFunc return an HTTP 200 status for liveness probes
@@ -125,6 +168,7 @@ func healthFunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Status: OK\n")
 }
 
+// verifyCerts tests if the certificate and key file exist
 func verifyCerts(crt, key string) error {
 	// Verify if the certificate exists
 	_, err := os.Stat(crt)

@@ -160,7 +160,7 @@ func passwdFunc(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "JSON encoding error: %v\n", err)
 			}
 			log.Printf("Client request: %d new password(s) generated for host %s\n", cfg.numIterations, r.RemoteAddr)
-			fmt.Fprintf(w, string(passwdJson))
+			fmt.Fprintf(w, "%s", string(passwdJson))
 		} else {
 			log.Printf("Client request: %d new password(s) generated for host %s\n", cfg.numIterations, r.RemoteAddr)
 			for index, value := range passwdSlice {

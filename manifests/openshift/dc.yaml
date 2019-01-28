@@ -1,0 +1,72 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  generation: 1
+  labels:
+    app: passgen
+  name: passgen
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: passgen
+    deploymentconfig: passgen
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: passgen
+        deploymentconfig: passgen
+    spec:
+      containers:
+      - command:
+        - passgen-svc
+        - --port
+        - "8443"
+        - --crt
+        - /etc/passgen/certs/tls.crt
+        - --key
+        - /etc/passgen/certs/tls.key
+        image: quay.io/gbsalinetti/passgen-svc@sha256:9d5a2d38bc046fd2f7ac7153463e6b963c691555a6d9434390d9788bb01b49fe
+        imagePullPolicy: Always
+        name: passgen
+        ports:
+        - containerPort: 8443
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/passgen/certs
+          name: passgen-certs
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: passgen-certs
+        secret:
+          defaultMode: 420
+          secretName: passgen-tls-cert
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - passgen
+      from:
+        kind: ImageStreamTag
+        name: passgen:latest
+        namespace: passgen
+    type: ImageChange

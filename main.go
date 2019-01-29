@@ -184,7 +184,7 @@ func helpFunc(w http.ResponseWriter, r *http.Request) {
 
 // healthFunc return an HTTP 200 status for liveness probes
 func healthFunc(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Status: OK\n")
+	fmt.Fprintf(w, "Service status: OK\n")
 }
 
 // verifyCerts tests if the certificate and key file exist

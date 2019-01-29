@@ -10,5 +10,5 @@ spec:
     - example.com
     secretName: passgen-tls-cert
   backend:
-    serviceName: passgen-svc
+    serviceName: passgen
     servicePort: 8443

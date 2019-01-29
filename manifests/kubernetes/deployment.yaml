@@ -1,12 +1,12 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: passgen-svc
+  name: passgen
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: passgen-svc
+      app: passgen
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -15,14 +15,14 @@ spec:
   template:
     metadata:
       labels:
-        app: passgen-svc
+        app: passgen
     spec:
       containers:
-      - name: passgen-svc
-        image: quay.io/gbsalinetti/passgen-svc:latest
+      - name: passgen
+        image: quay.io/gbsalinetti/passgen:latest
         imagePullPolicy: Always
         command: 
-        - passgen-svc 
+        - passgen 
         - -port 
         - "8443"
         ports:

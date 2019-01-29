@@ -1,4 +1,4 @@
-# Passgen-svc: a minimal https service for password generation
+# Passgen: a minimal https service for password generation
 
 This project is a minimial web service for password generations. It doesn't
 recordy any data about the customer (except for the caller IP address). 
@@ -14,7 +14,7 @@ go run main.go
 
 To run the service in a container (recommended):
 ```
-docker run -d -p 8443:8443 quay.io/gbsalinetti/passgen-svc:latest
+docker run -d -p 8443:8443 quay.io/gbsalinetti/passgen:latest
 ```
 
 To run on Kubenernetes/OpenShift the manifests provided in the *manifests* folder
@@ -80,15 +80,15 @@ repository):
 
 To build in OpenShift using the **oc new-app** tool with the Docker strategy:
 ```
-$ oc new-app https://github.com/giannisalinetti/passgen-svc --strategy=docker
+$ oc new-app https://github.com/giannisalinetti/passgen --strategy=docker
 ```
 
 This will create the following objects:
 - imagestream.image.openshift.io "golang"
-- imagestream.image.openshift.io "passgen-svc"
-- buildconfig.build.openshift.io "passgen-svc"
-- deploymentconfig.apps.openshift.io "passgen-svc"
-- service "passgen-svc" created
+- imagestream.image.openshift.io "passgen"
+- buildconfig.build.openshift.io "passgen"
+- deploymentconfig.apps.openshift.io "passgen"
+- service "passgen" created
 
 The route won't be created automatically. To create a passthough route use the
 command **oc create route passthough** or the manifest provided in the 

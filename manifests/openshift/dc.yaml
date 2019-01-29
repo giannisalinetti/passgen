@@ -29,14 +29,14 @@ spec:
     spec:
       containers:
       - command:
-        - passgen-svc
+        - passgen
         - --port
         - "8443"
         - --crt
         - /etc/passgen/certs/tls.crt
         - --key
         - /etc/passgen/certs/tls.key
-        image: quay.io/gbsalinetti/passgen-svc@sha256:9d5a2d38bc046fd2f7ac7153463e6b963c691555a6d9434390d9788bb01b49fe
+        image: quay.io/gbsalinetti/passgen@sha256:9d5a2d38bc046fd2f7ac7153463e6b963c691555a6d9434390d9788bb01b49fe
         imagePullPolicy: Always
         name: passgen
         ports:

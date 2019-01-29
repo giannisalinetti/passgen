@@ -1,4 +1,4 @@
-APP_NAME=passgen-svc
+APP_NAME=passgen
 REGISTRY=quay.io
 NAMESPACE=gbsalinetti
 

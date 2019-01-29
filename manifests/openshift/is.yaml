@@ -9,7 +9,7 @@ spec:
   - annotations: null
     from:
       kind: DockerImage
-      name: quay.io/gbsalinetti/passgen-svc
+      name: quay.io/gbsalinetti/passgen
     generation: 1
     importPolicy: {}
     name: latest

@@ -78,6 +78,22 @@ repository):
 # make tag && make push
 ```
 
+To build in OpenShift using the **oc new-app** tool with the Docker strategy:
+```
+$ oc new-app https://github.com/giannisalinetti/passgen-svc --strategy=docker
+```
+
+This will create the following objects:
+- imagestream.image.openshift.io "golang"
+- imagestream.image.openshift.io "passgen-svc"
+- buildconfig.build.openshift.io "passgen-svc"
+- deploymentconfig.apps.openshift.io "passgen-svc"
+- service "passgen-svc" created
+
+The route won't be created automatically. To create a passthough route use the
+command **oc create route passthough** or the manifest provided in the 
+*manifests/openshift/route.yaml* after adjusting it to the correct service name.
+
 ### Self signed certificate
 This project is a proof of concept. Self signed certificate and the associated key 
 have been generated with the following command:

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -22,6 +23,7 @@ var genInput = &password.GeneratorInput{
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 	"1234567890",
 	"!@#$%^&*()_+{}:;.<>?/|",
+	rand.Reader,
 }
 
 // Config defines the configuration parameters

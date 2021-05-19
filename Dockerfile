@@ -1,12 +1,8 @@
-FROM docker.io/golang
-
-MAINTAINER Gianni Salinetti <gbsalinetti@extraordy.com>
-
-# Define a volume for certificates
-VOLUME /etc/passgen/certs/
+# Builder image
+FROM docker.io/golang AS builder
 
 # Copy files for build
-COPY certs/server.crt certs/server.key /etc/passgen/certs/
+COPY go.mod /go/src/passgen/
 COPY main.go /go/src/passgen/
 
 # Set the working directory
@@ -16,8 +12,15 @@ WORKDIR /go/src/passgen
 RUN go get -d -v ./...
 
 # Install the package
-RUN go install -v ./...
+RUN go build -v ./...
+
+# Runtime image
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest as bin
+COPY --from=builder /go/src/passgen/ /
+
+# Define a volume for certificates
+VOLUME /etc/passgen/certs/
 
 EXPOSE 8443
 
-CMD ["passgen"]
+CMD ["/passgen"]

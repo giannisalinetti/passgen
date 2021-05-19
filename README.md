@@ -14,30 +14,14 @@ go run main.go
 
 To run the service in a container (recommended):
 ```
-docker run -d -p 8443:8443 quay.io/gbsalinetti/passgen:latest
+docker run -d -v <path_to_certs>:/etc/passgen/certs -p 8443:8443 quay.io/gbsalinetti/passgen:latest
 ```
 
-To run on Kubenernetes/OpenShift the manifests provided in the *manifests* folder
-can be used as a starting point.
-
-To create the Deployment resource:
+To run Passgen on Kubernetes/OpenShift an Helm chart is provided. To install
+using the default values:
 ```
-$ kubectl create -f manifests/deployment.yaml
+helm install passgen ./helm/passgen
 ```
-
-To create the Service (esposed on 8443):
-```
-$ kubectl create -f manifests/service.yaml
-```
-
-To create an Ingress route and the secret to expose it on https:
-```
-$ kubectl create -f manifesta/secret.yaml
-$ kubectl create -f manifests/ingress.yaml
-```
-
-The secret should be updated with the correct certificates. The hostname 
-defined in the ingress route must match the one in the certificate CN.
 
 ### Client Usage
 To get a standard default password of length 32:
@@ -62,7 +46,7 @@ $ curl -k 'https://localhost:8443/passwd?length=64&digits=8&symbols=4&noupper=fa
 ```
 
 ### Build
-To generate the certificates before building:
+To generate the certificates:
 ```
 $ make gencerts
 ```

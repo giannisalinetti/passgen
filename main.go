@@ -214,8 +214,8 @@ func main() {
 	)
 
 	flag.StringVar(&port, "port", "8443", "Listening port")
-	flag.StringVar(&serverCert, "crt", "/etc/passgen/certs/server.crt", "Path to server certificate")
-	flag.StringVar(&serverKey, "key", "/etc/passgen/certs/server.key", "Path to private key")
+	flag.StringVar(&serverCert, "crt", "/etc/passgen/certs/tls.crt", "Path to server certificate")
+	flag.StringVar(&serverKey, "key", "/etc/passgen/certs/tls.key", "Path to private key")
 	flag.Parse()
 
 	// Test if provided certificates exist
